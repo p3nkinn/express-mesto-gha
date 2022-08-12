@@ -8,6 +8,7 @@
     "lint": "npx eslint",
     "dev": "nodemon app.js",
     "start": "node app.js"
+
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,8 @@
     "mongoose": "^6.5.1"
   },
   "devDependencies": {
+    "eslint": "^8.21.0",
+    "eslint-plugin-react": "^7.30.1",
     "nodemon": "^2.0.19"
   }
 }

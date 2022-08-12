@@ -7,7 +7,7 @@ module.exports.getUser = (req, res) => {
 }
 
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params._id)
+  User.findById(req.params.usersId)
     .then(user => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -22,7 +22,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.params.id, { name, about })
+  User.findByIdAndUpdate(req.params.usersId, { name, about })
   .then(user => res.send({ data: user }))
   .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 }
@@ -30,7 +30,7 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.params.id, { avatar })
+  User.findByIdAndUpdate(req.params.usersId, { avatar })
   .then(user => res.send({ data: user }))
   .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 }
