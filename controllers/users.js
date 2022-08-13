@@ -4,14 +4,28 @@ const User = require("../models/user");
 module.exports.getUser = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.usersId)
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.createUser = (req, res) => {
