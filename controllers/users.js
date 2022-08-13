@@ -20,7 +20,7 @@ module.exports.getUserById = (req, res) => {
   .orFail(() => {
     throw new Error('Пользователь не найден')
   })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(404)
