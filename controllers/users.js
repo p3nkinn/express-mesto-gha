@@ -1,14 +1,11 @@
 const User = require("../models/user");
-const ERROR_CODE = 400;
+
 
 module.exports.getUser = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
-    if (err.name === "SomeErrorName")
-    return res.status(ERROR_CODE).send({
-      message: "Запрашиваемый пользователь не найден",
-    });
+
 };
 
 module.exports.getUserById = (req, res) => {
@@ -22,10 +19,6 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
-    if (err.name === "SomeErrorName")
-    return res.status(ERROR_CODE).send({
-      message: "Запрашиваемый пользователь не найден",
-    });
 };
 
 module.exports.updateUser = (req, res) => {
