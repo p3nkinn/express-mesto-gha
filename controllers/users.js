@@ -17,7 +17,10 @@ module.exports.getUser = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.usersId)
-    .then((user) => res.send({ data: user }))
+  .orFail(() => {
+    throw new Error('Пользователь не найден')
+  })
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(404)
@@ -31,7 +34,7 @@ module.exports.getUserById = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400)
