@@ -32,7 +32,14 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -40,7 +47,14 @@ module.exports.updateUser = (req, res) => {
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(req.params.usersId, { name, about })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -48,5 +62,12 @@ module.exports.updateAvatar = (req, res) => {
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(req.params.usersId, { avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
