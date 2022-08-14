@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use((req, res, next) => {
   req.user = {
-    _id: '62f5d7dd3746ee905d95e1ae' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '62f94cac09ce15b5df1c49a2' // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
   next();
 });

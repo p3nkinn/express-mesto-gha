@@ -2,7 +2,7 @@ const modelCards = require('../models/card');
 
 module.exports.getCard = (req, res) => {
   modelCards.find({})
-    .then(card => res.send({ data: card }))
+    .then(card => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400)
