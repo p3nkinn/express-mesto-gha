@@ -16,8 +16,13 @@ app.use((req, res, next) => {
   };
   next();
 });
+
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
+
+app.use((req, res, next) => {
+  res.status(404).send('Sorry cant find that!');
+});
 
 app.listen(PORT, () => {
   console.log('`App listening on port ${PORT}`');
