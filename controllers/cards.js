@@ -41,8 +41,12 @@ module.exports.createCard= (req, res) => {
 }
 
 module.exports.likeCard = (req, res) => {
-   Card.findByIdAndUpdate(req.params.cardId,
-  { $addToSet: { likes: req.params.usersId } }, { new: true })
+  modelCards.findByIdAndUpdate(
+    req.params.cardId,
+  { $addToSet: { likes: req.user._id } }, { new: true },)
+  .orFail(() => {
+    throw new Error("Пользователь не найден");
+  })
   .then(card => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -54,8 +58,17 @@ module.exports.likeCard = (req, res) => {
     });
 }
 
-module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
+module.exports.dislikeCard = (req, res) => {
+modelCards.findByIdAndUpdate(
   req.params.cardId,
-  { $pull: { likes: req.params.usersId } }, // убрать _id из массива
-  { new: true },
-)
+  { $pull: { likes: req.user._id  } }, { new: true },)
+  .then(card => res.status(200).send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400)
+          .send({ message: 'Переданы некорректные данные при создании' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
+}
