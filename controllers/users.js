@@ -49,10 +49,14 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
+      console.log(err.name)
       if (err.name === 'CastError') {
         res.status(400)
           .send({ message: ' Переданы некорректные данные при обновлении профиля.' });
-      }  else {
+      } else if (err.name === 'Error') {
+        res.status(404)
+          .send({ message: 'Пользователь с указанным id не найден.' });
+      } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
@@ -61,7 +65,7 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.params.usersId, { avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
