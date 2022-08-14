@@ -18,7 +18,7 @@ module.exports.delCardById = (req, res) => {
   .orFail(() => {
     throw new Error("Карточка не найдена");
   })
-  .then((user) => res.status(200).send({ data: user }))
+  .then((card) => res.status(200).send({ data: card }))
   .catch((err) => {
     if (err.name === "CastError") {
       res
@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res) => {
   .orFail(() => {
     throw new Error("Карточка не найдена");
   })
-  .then((user) => res.status(200).send({ data: user }))
+  .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === "CastError") {
         res
@@ -78,7 +78,7 @@ modelCards.findByIdAndUpdate(
   .orFail(() => {
     throw new Error("Карточка не найдена");
   })
-  .then((user) => res.status(200).send({ data: user }))
+  .then((card) => res.status(200).send({ data: card }))
   .catch((err) => {
     if (err.name === "CastError") {
       res
