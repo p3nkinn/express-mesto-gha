@@ -14,16 +14,24 @@ module.exports.getCard = (req, res) => {
 }
 
 module.exports.delCardById = (req, res) => {
-  modelCards.findByIdAndRemove(req.params.usersId)
-    .then(card => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400)
-          .send({ message: 'Переданы некорректные данные при создании' });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
-    });
+  modelCards.findByIdAndRemove(req.user._id)
+  .orFail(() => {
+    throw new Error("Карточка не найдена");
+  })
+  .then((user) => res.status(200).send({ data: user }))
+  .catch((err) => {
+    if (err.name === "CastError") {
+      res
+        .status(400)
+        .send({ message: "Карточка по указанному id не найдена." });
+    } else if (err.name === "Error") {
+      res
+        .status(404)
+        .send({ message: "Карточка по указанному id не найдена в БД." });
+    } else {
+      res.status(500).send({ message: "Произошла ошибка" });
+    }
+  });
 };
 
 module.exports.createCard= (req, res) => {
@@ -45,15 +53,20 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
   { $addToSet: { likes: req.user._id } }, { new: true },)
   .orFail(() => {
-    throw new Error("Пользователь не найден");
+    throw new Error("Карточка не найдена");
   })
-  .then(card => res.status(200).send({ data: card }))
+  .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400)
-          .send({ message: 'Переданы некорректные данные при создании' });
+      if (err.name === "CastError") {
+        res
+          .status(400)
+          .send({ message: "Карточка по указанному id не найдена." });
+      } else if (err.name === "Error") {
+        res
+          .status(404)
+          .send({ message: "Карточка по указанному id не найдена в БД." });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: "Произошла ошибка" });
       }
     });
 }
@@ -62,13 +75,21 @@ module.exports.dislikeCard = (req, res) => {
 modelCards.findByIdAndUpdate(
   req.params.cardId,
   { $pull: { likes: req.user._id  } }, { new: true },)
-  .then(card => res.status(200).send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400)
-          .send({ message: 'Переданы некорректные данные при создании' });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
-    });
+  .orFail(() => {
+    throw new Error("Карточка не найдена");
+  })
+  .then((user) => res.status(200).send({ data: user }))
+  .catch((err) => {
+    if (err.name === "CastError") {
+      res
+        .status(400)
+        .send({ message: "Карточка по указанному id не найдена." });
+    } else if (err.name === "Error") {
+      res
+        .status(404)
+        .send({ message: "Карточка по указанному id не найдена в БД." });
+    } else {
+      res.status(500).send({ message: "Произошла ошибка" });
+    }
+  });
 }
