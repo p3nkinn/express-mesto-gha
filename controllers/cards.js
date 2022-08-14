@@ -14,7 +14,7 @@ module.exports.getCard = (req, res) => {
 }
 
 module.exports.delCardById = (req, res) => {
-  modelCards.findByIdAndRemove(req.user._id)
+  modelCards.findByIdAndRemove(req.params.cardId, { owner: req.user._id })
   .orFail(() => {
     throw new Error("Карточка не найдена");
   })
