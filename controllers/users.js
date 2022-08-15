@@ -54,11 +54,9 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res
-          .status(400)
-          .send({
-            message: " Переданы некорректные данные при обновлении профиля.",
-          });
+        res.status(400).send({
+          message: " Переданы некорректные данные при обновлении профиля.",
+        });
       } else {
         res.status(500).send({ message: "Произошла ошибка" });
       }
