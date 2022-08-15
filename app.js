@@ -22,12 +22,16 @@ app.use("/", require("./routes/users"));
 app.use("/", require("./routes/cards"));
 
 app.use(function (req, res, next) {
-  res.status(404).send("Извините страница не найдена!");
+  res.status(404).send({
+    message: "Извините страница не найдена.",
+  });
 });
 
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).send({
+    message: "Что то сломалось.",
+  });
 });
 
 app.listen(PORT, () => {
