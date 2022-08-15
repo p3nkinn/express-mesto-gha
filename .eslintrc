@@ -4,7 +4,8 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "airbnb-base"
 
     ],
     "parserOptions": {
@@ -18,7 +19,6 @@
         "react"
     ],
     "rules": {
-      "extends": "airbnb-base",
       "allow": ["foo_", "_bar"]
     }
 }
