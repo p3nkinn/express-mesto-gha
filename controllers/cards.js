@@ -4,6 +4,7 @@ const BadRequest = require('../errors/BadRequest');
 module.exports.getCard = (req, res) => {
   modelCards
     .find({})
+    .populate('user')
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
