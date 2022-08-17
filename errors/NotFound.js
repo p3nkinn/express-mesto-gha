@@ -2,7 +2,7 @@ const ApplicationError = require('./ApplicationError');
 
 const NotFound = new ApplicationError({
   message: 'Карточка по указанному id не найдена в БД.',
-  statusCode: '404',
+  status: '404',
   name: 'notFound',
 });
 

@@ -29,7 +29,7 @@ module.exports.delCardById = (req, res) => {
         res
           .status(CastError.status)
           .send({ message: 'Карточка по указанному id не найдена.' });
-      } else if (err.name === 'Error') {
+      } else if (err.name === 'NotFound') {
         res
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
