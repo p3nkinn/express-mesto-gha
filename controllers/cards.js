@@ -74,7 +74,7 @@ module.exports.likeCard = (req, res) => {
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
       } else {
-        res.status(InternalError).send({ message: 'Произошла ошибка' });
+        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -100,7 +100,7 @@ module.exports.dislikeCard = (req, res) => {
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
       } else {
-        res.status(InternalError).send({ message: 'Произошла ошибка' });
+        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
       }
     });
 };
