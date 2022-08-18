@@ -1,9 +1,9 @@
 const ApplicationError = require('./ApplicationError');
 
-const InternalError = new ApplicationError({
+const CastError = new ApplicationError({
   message: 'Передан некорректный id',
   status: '400',
   name: 'CastError',
 });
 
-module.exports = InternalError;
+module.exports = CastError;

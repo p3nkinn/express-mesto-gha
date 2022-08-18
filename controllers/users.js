@@ -19,13 +19,9 @@ module.exports.getUserById = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(CastError.status)
-          .send(CastError.message);
+        res.status(CastError.status).send(CastError.message);
       } else if (err.name === 'NotFound') {
-        res
-          .status(NotFound.status)
-          .send(NotFound.message);
+        res.status(NotFound.status).send(NotFound.message);
       } else {
         res.status(InternalError.status).send(InternalError.message);
       }
