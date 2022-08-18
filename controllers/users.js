@@ -7,23 +7,23 @@ module.exports.getUser = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch(() => {
-      res.status(InternalError.status).send(InternalError.message);
+      res.status(InternalError.status).send({ message: 'Произошла ошибка' });
     });
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.usersId)
     .orFail(() => {
-      throw new Error('Пользователь не найден');
+      throw new Error('NotFound');
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(CastError.status).send(CastError.message);
-      } else if (err.name === 'NotFound') {
-        res.status(NotFound.status).send(NotFound.message);
+        res.status(CastError.status).send({ message: 'Передан некорректный id' });
+      } else if (err.message === 'NotFound') {
+        res.status(NotFound.status).send({ message: 'Данные по указанному id не найдена в БД.' });
       } else {
-        res.status(InternalError.status).send(InternalError.message);
+        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
       }
     });
 };

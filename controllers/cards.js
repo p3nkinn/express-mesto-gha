@@ -21,15 +21,15 @@ module.exports.delCardById = (req, res) => {
   modelCards
     .findByIdAndRemove(req.params.cardId, { owner: req.user._id })
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new Error('NotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res
           .status(CastError.status)
-          .send({ message: 'Карточка по указанному id не найдена.' });
-      } else if (err.name === 'NotFound') {
+          .send({ message: 'Передан некорректный id.' });
+      } else if (err.message === 'NotFound') {
         res
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
@@ -61,15 +61,15 @@ module.exports.likeCard = (req, res) => {
       { new: true },
     )
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new Error('NotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res
           .status(CastError.status)
-          .send({ message: 'Карточка по указанному id не найдена.' });
-      } else if (err.name === 'NotFound') {
+          .send({ message: 'Передан некорректный id.' });
+      } else if (err.message === 'NotFound') {
         res
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
@@ -87,15 +87,15 @@ module.exports.dislikeCard = (req, res) => {
       { new: true },
     )
     .orFail(() => {
-      throw new Error('Карточка не найдена');
+      throw new Error('NotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res
           .status(CastError.status)
-          .send({ message: 'Карточка по указанному id не найдена.' });
-      } else if (err.name === 'NotFound') {
+          .send({ message: 'Передан некорректный id.' });
+      } else if (err.message === 'NotFound') {
         res
           .status(NotFound.status)
           .send({ message: 'Карточка по указанному id не найдена в БД.' });
