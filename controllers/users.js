@@ -1,8 +1,10 @@
+const BadRequest = require('../errors/BadRequest');
+const UserNotFound = require('../errors/UserNotFound');
 const User = require('../models/user');
 
 module.exports.getUser = (req, res) => {
   User.find({})
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       res.status(500).send({ message: `Произошла ошибка ${err}` });
     });
@@ -11,18 +13,14 @@ module.exports.getUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.usersId)
     .orFail(() => {
-      throw new Error('Пользователь не найден');
+      throw new UserNotFound();
     })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(400)
-          .send({ message: 'Пользователь по указанному id не найден.' });
-      } else if (err.name === 'Error') {
-        res
-          .status(404)
-          .send({ message: 'Пользователь по указанному id не найден в БД.' });
+        res.status(400).send(err);
+      } else if (err.name === 'UserNotFound') {
+        res.status(err.status).send(err);
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -32,7 +30,7 @@ module.exports.getUserById = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
@@ -51,7 +49,7 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({
