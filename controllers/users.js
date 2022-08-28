@@ -22,7 +22,6 @@ module.exports.login = (req, res) => {
       res
         .cookie('jwt', token, {
         // token - наш JWT токен, который мы отправляем
-          maxAge: 3600000,
           httpOnly: true,
         });
       if (!user) {
