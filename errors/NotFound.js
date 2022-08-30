@@ -1,9 +1,8 @@
-const ApplicationError = require('./ApplicationError');
-
-const NotFound = new ApplicationError({
-  message: 'Данные по указанному id не найдена в БД.',
-  status: '404',
-  name: 'NotFound',
-});
+class NotFound extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 404;
+  }
+}
 
 module.exports = NotFound;

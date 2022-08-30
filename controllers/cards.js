@@ -1,23 +1,16 @@
-const CastError = require('../errors/CastError');
-const InternalError = require('../errors/InternalError');
+const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 const modelCards = require('../models/card');
 
-module.exports.getCard = (req, res) => {
+module.exports.getCard = (req, res, next) => {
   modelCards
     .find({})
     .populate('owner')
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err) {
-        res.status(CastError.status).send({ message: `Переданы некорректные данные при создании ${err.message}` });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
-      }
-    });
+    .catch((err) => next(err));
 };
 
-module.exports.delCardById = (req, res) => {
+module.exports.delCardById = (req, res, next) => {
   modelCards
     .findByIdAndRemove(req.params.cardId, { owner: req.user._id })
     .orFail(() => {
@@ -26,34 +19,26 @@ module.exports.delCardById = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(CastError.status)
-          .send({ message: 'Передан некорректный id.' });
+        throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
-        res
-          .status(NotFound.status)
-          .send({ message: 'Карточка по указанному id не найдена в БД.' });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
+        throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   modelCards
     .create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(CastError.status).send({ message: `Переданы некорректные данные при создании карточки ${err.message}` });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
-      }
-    });
+      throw new BadRequest({ message: `Указаны некорректные данные при создании карточки: ${err.message}` });
+    })
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   modelCards
     .findByIdAndUpdate(
       req.params.cardId,
@@ -66,20 +51,15 @@ module.exports.likeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(CastError.status)
-          .send({ message: 'Передан некорректный id.' });
+        throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
-        res
-          .status(NotFound.status)
-          .send({ message: 'Карточка по указанному id не найдена в БД.' });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
+        throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
-    });
+    })
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   modelCards
     .findByIdAndUpdate(
       req.params.cardId,
@@ -92,15 +72,10 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(CastError.status)
-          .send({ message: 'Передан некорректный id.' });
+        throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
-        res
-          .status(NotFound.status)
-          .send({ message: 'Карточка по указанному id не найдена в БД.' });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
+        throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
-    });
+    })
+    .catch(next);
 };

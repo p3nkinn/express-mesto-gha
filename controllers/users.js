@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const CastError = require('../errors/CastError');
+const CastError = require('../errors/BadRequest');
 const InternalError = require('../errors/InternalError');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
@@ -13,35 +13,20 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findOne({ email }).select('+password')
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
       res
         .cookie('jwt', token, {
-        // token - наш JWT токен, который мы отправляем
+          maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-        });
-      if (!user) {
-        throw new Error('Неправильные почта или пароль');
-      }
-
-      return bcrypt.compare(password, user.password);
+        }).end();
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    })
-    .then((matched) => {
-      if (!matched) {
-        throw new Error('Неправильные почта или пароль');
-      }
-      res.send({ message: 'Всё верно!' });
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch((err) => next(err));
 };
 
 module.exports.getUserById = (req, res) => {

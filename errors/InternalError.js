@@ -1,9 +1,8 @@
-const ApplicationError = require('./ApplicationError');
-
-const InternalError = new ApplicationError({
-  message: 'Что-то пошло не так',
-  status: '500',
-  name: 'InternalError',
-});
+class InternalError extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 500;
+  }
+}
 
 module.exports = InternalError;
