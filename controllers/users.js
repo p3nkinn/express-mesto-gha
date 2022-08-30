@@ -1,16 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const ConflictRequest = require('../errors/ConflictRequest');
 const CastError = require('../errors/BadRequest');
 const InternalError = require('../errors/InternalError');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => {
-      res.status(InternalError.status).send({ message: 'Произошла ошибка' });
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
@@ -29,44 +28,45 @@ module.exports.login = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
-    .orFail(() => {
-      throw new Error('NotFound');
+    .orFail()
+    .catch(() => {
+      throw new NotFound('Данные по указанному id не найдена в БД.');
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(CastError.status).send({ message: 'Передан некорректный id' });
-      } else if (err.message === 'NotFound') {
-        res.status(NotFound.status).send({ message: 'Данные по указанному id не найдена в БД.' });
-      } else {
-        res.status(InternalError.status).send({ message: 'Произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email,
+  } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
       User.create({
         name,
         about,
         avatar,
-        email: req.body.email,
+        email,
         password: hash,
       })
-        .then((user) => res.send({ data: user }))
         .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res
-              .status(CastError.status)
-              .send({ message: 'Переданы некорректные данные при создании' });
+          if (err.name === 'ValidationError' || err.code === 11000) {
+            throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
           } else {
-            res.status(InternalError.status).send({ message: 'Произошла ошибка' });
+            next(err);
           }
-        });
+        })
+        .then((user) => res.send({
+          data: {
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+          },
+        }))
+        .catch(next);
     });
 };
 
