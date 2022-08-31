@@ -39,9 +39,15 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
-    .orFail()
-    .catch(() => {
-      throw new NotFound('Данные по указанному id не найдена в БД.');
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequest('Передан некорректный id');
+      } else if (err.message === 'NotFound') {
+        throw new NotFound('Данные по указанному id не найдена в БД.');
+      }
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => next(err));
