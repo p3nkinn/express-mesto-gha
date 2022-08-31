@@ -93,6 +93,9 @@ module.exports.updateUser = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
+    .orFail(() => {
+      throw new NotFound('Передан некорректный id');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -110,6 +113,9 @@ module.exports.updateAvatar = (req, res, next) => {
     { avatar },
     { new: true, runValidators: true },
   )
+    .orFail(() => {
+      throw new NotFound('Передан некорректный id');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {

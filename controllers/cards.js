@@ -1,5 +1,6 @@
 const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
+const ForbiddenError = require('../errors/ForbiddenError');
 const modelCards = require('../models/card');
 
 module.exports.getCard = (req, res, next) => {
@@ -16,7 +17,11 @@ module.exports.delCardById = (req, res, next) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Недостаточно прав');
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequest('Передан некорректный id.');
