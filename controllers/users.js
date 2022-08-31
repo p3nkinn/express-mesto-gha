@@ -6,12 +6,6 @@ const InternalError = require('../errors/InternalError');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
 
-module.exports.getUser = (req, res, next) => {
-  User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch(next);
-};
-
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -28,6 +22,22 @@ module.exports.login = (req, res, next) => {
     .catch((err) => next(err));
 };
 
+module.exports.getUser = (req, res, next) => {
+  User.find({})
+    .then((user) => res.send({ data: user }))
+    .catch((err) => next(err));
+};
+
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.params._id)
+    .orFail()
+    .catch(() => {
+      throw new NotFound('Данные по указанному id не найдена в БД.');
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => next(err));
+};
+
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
     .orFail()
@@ -35,7 +45,7 @@ module.exports.getUserById = (req, res, next) => {
       throw new NotFound('Данные по указанному id не найдена в БД.');
     })
     .then((user) => res.send({ data: user }))
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -52,7 +62,8 @@ module.exports.createUser = (req, res, next) => {
         password: hash,
       })
         .catch((err) => {
-          if (err.name === 'ValidationError' || err.code === 11000) {
+          console.log(err);
+          if (err.name === 'ConflictError' || err.code === 11000) {
             throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
           } else {
             next(err);
@@ -66,7 +77,7 @@ module.exports.createUser = (req, res, next) => {
             email: user.email,
           },
         }))
-        .catch(next);
+        .catch((err) => next(err));
     });
 };
 

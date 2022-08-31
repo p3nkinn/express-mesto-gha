@@ -2,10 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
-const { createCard } = require('./controllers/cards');
-const { auth } = require('./middlewares/auth');
+// const { createCard } = require('./controllers/cards');
+// const { auth } = require('./middlewares/auth');
 const NotFound = require('./errors/NotFound');
 
 const { PORT = 3000 } = process.env;
@@ -16,10 +16,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
-
-app.post('/cards', auth, createCard);
+// app.post('/cards', auth, createCard);
 app.post(
   '/signin',
   celebrate({
@@ -45,9 +42,15 @@ app.post(
   }),
   createUser,
 );
-app.use('*', auth, () => {
+
+app.use('/', require('./routes/users'));
+app.use('/', require('./routes/cards'));
+
+app.use(() => {
   throw new NotFound('Запрашиваемый ресурс не найден');
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;

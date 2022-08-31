@@ -7,16 +7,17 @@ const {
   getUserById,
   updateUser,
   updateAvatar,
+  getCurrentUser,
 } = require('../controllers/users');
 
 router.get('/users', auth, getUser);
-router.get('/users/me', auth, getUserById);
+router.get('/users/me', auth, getCurrentUser);
 router.get(
   '/users/:usersId',
   auth,
   celebrate({
     params: Joi.object().keys({
-      cardId: Joi.string().alphanum().length(24),
+      userId: Joi.string().alphanum().length(24),
     }),
   }),
   getUserById,
