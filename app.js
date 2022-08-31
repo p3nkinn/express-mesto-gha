@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
-// const { createCard } = require('./controllers/cards');
-// const { auth } = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 const NotFound = require('./errors/NotFound');
 
 const { PORT = 3000 } = process.env;
@@ -16,7 +15,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-// app.post('/cards', auth, createCard);
 app.post(
   '/signin',
   celebrate({
@@ -43,8 +41,8 @@ app.post(
   createUser,
 );
 
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
+app.use('/', auth, require('./routes/users'));
+app.use('/', auth, require('./routes/cards'));
 
 app.use(() => {
   throw new NotFound('Запрашиваемый ресурс не найден');
