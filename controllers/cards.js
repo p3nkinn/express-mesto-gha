@@ -24,7 +24,7 @@ module.exports.delCardById = (req, res, next) => {
         throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -35,7 +35,7 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       throw new BadRequest({ message: `Указаны некорректные данные при создании карточки: ${err.message}` });
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -50,13 +50,13 @@ module.exports.likeCard = (req, res, next) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'BadRequest') {
         throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
         throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -71,11 +71,11 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'BadRequest') {
         throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
         throw new NotFound('Карточка по указанному id не найдена в БД.');
       }
     })
-    .catch(next);
+    .catch((err) => next(err));
 };

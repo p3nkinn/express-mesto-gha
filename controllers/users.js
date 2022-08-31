@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const ConflictRequest = require('../errors/ConflictRequest');
-const CastError = require('../errors/BadRequest');
-const InternalError = require('../errors/InternalError');
+const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
 
@@ -63,7 +62,7 @@ module.exports.createUser = (req, res, next) => {
       })
         .catch((err) => {
           console.log(err);
-          if (err.name === 'MongoError' || err.code === 11000) {
+          if (err.name === 'ConflictError' || err.code === 11000) {
             throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
           } else {
             next(err);
@@ -81,7 +80,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -91,16 +90,13 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(CastError.status).send({
-          message: ' Переданы некорректные данные при обновлении профиля.',
-        });
-      } else {
-        res.status(InternalError).send({ message: 'Произошла ошибка' });
+        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
       }
-    });
+    })
+    .catch((err) => next(err));
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(
@@ -111,11 +107,8 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(CastError)
-          .send({ message: 'Переданы некорректные данные при создании' });
-      } else {
-        res.status(InternalError).send({ message: 'Произошла ошибка' });
+        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
       }
-    });
+    })
+    .catch((err) => next(err));
 };
