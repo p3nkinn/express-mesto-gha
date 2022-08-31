@@ -63,7 +63,7 @@ module.exports.createUser = (req, res, next) => {
       })
         .catch((err) => {
           console.log(err);
-          if (err.name === 'ConflictError' || err.code === 11000) {
+          if (err.name === 'MongoError' || err.code === 11000) {
             throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
           } else {
             next(err);
