@@ -28,15 +28,13 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (user) {
-        res.send({ data: user });
-      } else {
-        throw new NotFound('Данные по указанному id не найдена в БД.');
-      }
+  User.findById(req.params._id)
+    .orFail()
+    .catch(() => {
+      throw new NotFound('Нет пользователя с таким id');
     })
-    .catch((err) => next(err));
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res, next) => {
