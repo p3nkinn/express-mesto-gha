@@ -14,14 +14,12 @@ module.exports.getCard = (req, res, next) => {
 module.exports.delCardById = (req, res, next) => {
   modelCards
     .findById(req.params.cardId)
-    .orFail(() => {
-      throw new Error('NotFound');
-    })
+    .orFail()
     .catch(() => {
       throw new NotFound('Карточка по указанному id не найдена в БД.');
     })
     .then((card) => {
-      if (card.owner.toString() !== req.params.cardId) {
+      if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Невозможно удалить чужую карточку');
       }
       modelCards.findByIdAndDelete(req.params.cardId)
