@@ -6,7 +6,7 @@ const modelCards = require('../models/card');
 module.exports.getCard = (req, res, next) => {
   modelCards
     .find({})
-    .populate('user')
+    .populate('owner')
     .then((card) => res.send({ data: card }))
     .catch((err) => next(err));
 };
@@ -14,12 +14,14 @@ module.exports.getCard = (req, res, next) => {
 module.exports.delCardById = (req, res, next) => {
   modelCards
     .findById(req.params.cardId)
-    .orFail()
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .catch(() => {
       throw new NotFound('Карточка по указанному id не найдена в БД.');
     })
     .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
+      if (card.owner.toString() !== req.params.cardId) {
         throw new ForbiddenError('Невозможно удалить чужую карточку');
       }
     });
@@ -51,9 +53,11 @@ module.exports.likeCard = (req, res, next) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     )
-    .orFail()
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .catch((err) => {
-      if (err.name === 'BadRequest') {
+      if (err.name === 'CastError') {
         throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
         throw new NotFound('Карточка по указанному id не найдена в БД.');
@@ -70,9 +74,11 @@ module.exports.dislikeCard = (req, res, next) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     )
-    .orFail()
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .catch((err) => {
-      if (err.name === 'BadRequest') {
+      if (err.name === 'CastError') {
         throw new BadRequest('Передан некорректный id.');
       } else if (err.message === 'NotFound') {
         throw new NotFound('Карточка по указанному id не найдена в БД.');
