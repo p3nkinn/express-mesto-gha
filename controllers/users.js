@@ -29,7 +29,6 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail()
     .then((user) => {
       if (user) {
         res.send({ data: user });
