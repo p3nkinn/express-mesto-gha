@@ -29,9 +29,7 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => {
-      throw new Error('NotFound');
-    })
+    .orFail()
     .catch(() => {
       throw new NotFound('Данные по указанному id не найдена в БД.');
     })
@@ -41,13 +39,11 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
-    .orFail(() => {
-      throw new Error('NotFound');
-    })
+    .orFail()
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequest('Передан некорректный id');
-      } else if (err.message === 'NotFound') {
+      } else if (err.name === 'NotFound') {
         throw new NotFound('Данные по указанному id не найдена в БД.');
       }
     })
