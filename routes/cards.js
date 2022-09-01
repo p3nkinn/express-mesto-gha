@@ -12,14 +12,13 @@ const {
 router.get(
   '/cards',
   auth,
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().alphanum().length(24),
-    }),
-  }),
   getCard,
 );
-router.delete('/cards/:cardId', delCardById);
+router.delete('/cards/:cardId', auth, celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), delCardById);
 router.post(
   '/cards',
   auth,
