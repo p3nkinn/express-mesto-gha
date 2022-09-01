@@ -45,11 +45,15 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequest('Передан некорректный id');
-      } else if (err.name === 'NotFound') {
+      }
+    })
+    .then((user) => {
+      if (user) {
+        res.send({ data: user });
+      } else {
         throw new NotFound('Данные по указанному id не найдена в БД.');
       }
     })
-    .then((user) => res.send({ data: user }))
     .catch((err) => next(err));
 };
 
