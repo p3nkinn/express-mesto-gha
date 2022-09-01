@@ -25,7 +25,7 @@ module.exports.delCardById = (req, res, next) => {
         throw new ForbiddenError('Невозможно удалить чужую карточку');
       }
     });
-  modelCards.findByIdAndRemove(req.params.cardId)
+  modelCards.findByIdAndDelete(req.params.cardId)
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -77,12 +77,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequest('Передан некорректный id.');
-      } else if (err.message === 'NotFound') {
-        throw new NotFound('Карточка по указанному id не найдена в БД.');
-      }
+    .catch(() => {
+      throw new NotFound('Карточка по указанному id не найдена в БД.');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => next(err));
