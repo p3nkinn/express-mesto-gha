@@ -11,7 +11,6 @@ const {
 } = require('../controllers/users');
 
 router.get('/users', auth, getUser);
-router.get('/users/me', auth, getCurrentUser);
 router.get(
   '/users/:userId',
   auth,
@@ -22,6 +21,7 @@ router.get(
   }),
   getUserById,
 );
+router.get('/users/me', auth, getCurrentUser);
 router.patch(
   '/users/me',
   auth,
