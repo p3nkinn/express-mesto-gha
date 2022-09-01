@@ -24,13 +24,13 @@ module.exports.delCardById = (req, res, next) => {
       if (card.owner.toString() !== req.params.cardId) {
         throw new ForbiddenError('Невозможно удалить чужую карточку');
       }
-    });
-  modelCards.findByIdAndDelete(req.params.cardId)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequest('Передан некорректный id.');
-      }
+      modelCards.findByIdAndDelete(req.params.cardId)
+        .then((cardDelete) => res.send({ data: cardDelete }))
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            throw new BadRequest('Передан некорректный id.');
+          }
+        });
     })
     .catch((err) => next(err));
 };
@@ -77,8 +77,12 @@ module.exports.dislikeCard = (req, res, next) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .catch(() => {
-      throw new NotFound('Карточка по указанному id не найдена в БД.');
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequest('Передан некорректный id.');
+      } else if (err.message === 'NotFound') {
+        throw new NotFound('Карточка по указанному id не найдена в БД.');
+      }
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => next(err));

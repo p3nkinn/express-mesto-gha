@@ -38,7 +38,7 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.usersId)
+  User.findById(req.params.userId)
     .orFail()
     .catch((err) => {
       if (err.name === 'CastError') {
