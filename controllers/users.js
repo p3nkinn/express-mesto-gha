@@ -28,7 +28,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params._id)
     .orFail()
     .catch(() => {
       throw new NotFound('Данные по указанному id не найдена в БД.');
