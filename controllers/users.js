@@ -48,10 +48,10 @@ module.exports.getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Передан некорректный id');
+        next(new BadRequest('Передан некорректный id'));
       }
-    })
-    .catch((err) => next(err));
+      next(err);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
