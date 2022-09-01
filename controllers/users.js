@@ -40,7 +40,7 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.usersId)
     .then((user) => {
       if (user) {
         res.send({ data: user });

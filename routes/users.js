@@ -12,7 +12,7 @@ const {
 
 router.get('/users', auth, getUser);
 router.get(
-  '/users/:userId',
+  '/users/:usersId',
   auth,
   celebrate({
     params: Joi.object().keys({
