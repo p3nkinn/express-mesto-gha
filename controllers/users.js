@@ -41,17 +41,17 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
-        throw new NotFound('Пользователь не найден');
+        throw new NotFound('Данные по указанному id не найдена в БД.');
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Переданы некорректные данные для запроса'));
+        throw new BadRequest('Передан некорректный id');
       }
-      return next(err);
-    });
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.createUser = (req, res, next) => {
