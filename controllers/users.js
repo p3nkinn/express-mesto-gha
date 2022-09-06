@@ -12,11 +12,6 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        }).end();
     })
     .catch((err) => next(err));
 };
@@ -64,6 +59,7 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
+        .catch(next)
         .then((user) => res.send({
           data: {
             name: user.name,
@@ -78,8 +74,7 @@ module.exports.createUser = (req, res, next) => {
           } else {
             next(err);
           }
-        })
-        .catch(next);
+        });
     });
 };
 
@@ -100,8 +95,7 @@ module.exports.updateUser = (req, res, next) => {
       } else {
         next(err);
       }
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -122,6 +116,5 @@ module.exports.updateAvatar = (req, res, next) => {
       } else {
         next(err);
       }
-    })
-    .catch((err) => next(err));
+    });
 };

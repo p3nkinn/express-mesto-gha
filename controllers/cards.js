@@ -53,15 +53,11 @@ module.exports.likeCard = (req, res, next) => {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     )
-    .orFail(() => {
-      throw new Error('NotFound');
-    })
+    .orFail(() => new NotFound('Пользователь с указанным id не существует'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Передан некорректный id.'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFound('Карточка по указанному id не найдена в БД.'));
       } else {
         next(err);
       }
@@ -75,15 +71,11 @@ module.exports.dislikeCard = (req, res, next) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     )
-    .orFail(() => {
-      throw new Error('NotFound');
-    })
+    .orFail(() => new NotFound('Пользователь с указанным id не существует'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Передан некорректный id.'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFound('Карточка по указанному id не найдена в БД.'));
       } else {
         next(err);
       }
