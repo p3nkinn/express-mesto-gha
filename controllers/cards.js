@@ -23,7 +23,7 @@ module.exports.delCardById = (req, res, next) => {
         .then((cardDelete) => res.send({ data: cardDelete }))
         .catch((err) => {
           if (err.name === 'CastError') {
-            throw new BadRequest('Передан некорректный id.');
+            next(new BadRequest('Передан некорректный id.'));
           }
         });
     })
