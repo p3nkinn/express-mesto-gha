@@ -26,7 +26,7 @@ module.exports.delCardById = (req, res, next) => {
             next(new BadRequest('Передан некорректный id.'));
           }
         })
-        .catch(next);
+        .catch((err) => next(err));
     });
 };
 
