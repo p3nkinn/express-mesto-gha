@@ -29,10 +29,7 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail()
-    .catch(() => {
-      throw new NotFound('Нет пользователя с таким id');
-    })
+    .orFail(() => new NotFound('Нет пользователя с таким id'))
     .then((user) => res.send({ data: user }))
     .catch((err) => next(err));
 };
