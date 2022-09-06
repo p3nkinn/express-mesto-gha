@@ -64,14 +64,6 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .catch((err) => {
-          console.log(err);
-          if (err.name === 'ConflictError' || err.code === 11000) {
-            throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
-          } else {
-            next(err);
-          }
-        })
         .then((user) => res.send({
           data: {
             name: user.name,
@@ -80,7 +72,14 @@ module.exports.createUser = (req, res, next) => {
             email: user.email,
           },
         }))
-        .catch((err) => next(err));
+        .catch((err) => {
+          if (err.name === 'ConflictError' || err.code === 11000) {
+            next(new ConflictRequest('Пользователь с таким email уже зарегистрирован'));
+          } else {
+            next(err);
+          }
+        })
+        .catch(next);
     });
 };
 
@@ -97,7 +96,9 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
+        next(new BadRequest(' Переданы некорректные данные при обновлении профиля.'));
+      } else {
+        next(err);
       }
     })
     .catch((err) => next(err));
@@ -117,7 +118,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
+        next(new BadRequest(' Переданы некорректные данные при обновлении профиля.'));
+      } else {
+        next(err);
       }
     })
     .catch((err) => next(err));
