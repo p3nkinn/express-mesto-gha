@@ -14,23 +14,23 @@ module.exports.getCard = (req, res, next) => {
 module.exports.delCardById = (req, res, next) => {
   modelCards
     .findById(req.params.cardId)
-    .orFail(() => {
+    .orFail()
+    .catch(() => {
       throw new NotFound('Карточка по указанному id не найдена в БД.');
     })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        next(new ForbiddenError('Невозможно удалить чужую карточку'));
+        throw new ForbiddenError('Невозможно удалить чужую карточку');
       }
       modelCards.findByIdAndDelete(req.params.cardId)
         .then((cardDelete) => res.send({ data: cardDelete }))
         .catch((err) => {
-          if (err.name === 'ValidationError') {
-            next(new BadRequest('Передан некорректный id.'));
-          } else {
-            next(err);
+          if (err.name === 'CastError') {
+            throw new BadRequest('Передан некорректный id.');
           }
         });
-    });
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.createCard = (req, res, next) => {
