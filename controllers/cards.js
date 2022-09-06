@@ -24,10 +24,12 @@ module.exports.delCardById = (req, res, next) => {
         .catch((err) => {
           if (err.name === 'CastError') {
             next(new BadRequest('Передан некорректный id.'));
+          } else {
+            next(err);
           }
-        })
-        .catch((err) => next(err));
-    });
+        });
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.createCard = (req, res, next) => {
