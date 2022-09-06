@@ -14,7 +14,9 @@ module.exports.getCard = (req, res, next) => {
 module.exports.delCardById = (req, res, next) => {
   modelCards
     .findById(req.params.cardId)
-    .orFail(() => new NotFound('Карточка по указанному id не найдена в БД.'))
+    .orFail(() => {
+      throw new NotFound('Карточка по указанному id не найдена в БД.');
+    })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         next(new ForbiddenError('Невозможно удалить чужую карточку'));
