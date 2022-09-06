@@ -44,7 +44,7 @@ app.post(
 app.use('/', auth, require('./routes/users'));
 app.use('/', auth, require('./routes/cards'));
 
-app.use(() => {
+app.use(auth, () => {
   throw new NotFound('Запрашиваемый ресурс не найден');
 });
 
