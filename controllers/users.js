@@ -59,7 +59,6 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .catch(next)
         .then((user) => res.send({
           data: {
             name: user.name,
@@ -75,7 +74,8 @@ module.exports.createUser = (req, res, next) => {
             next(err);
           }
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
