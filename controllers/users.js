@@ -12,11 +12,6 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        }).end();
     })
     .catch((err) => next(err));
 };
@@ -29,24 +24,13 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail()
-    .then((user) => {
-      if (user) {
-        res.send({ data: user });
-      } else {
-        throw new NotFound('Данные по указанному id не найдена в БД.');
-      }
-    })
+    .orFail(() => new NotFound('Нет пользователя с таким id'))
+    .then((user) => res.send({ data: user }))
     .catch((err) => next(err));
 };
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.usersId)
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequest('Передан некорректный id');
-      }
-    })
     .then((user) => {
       if (user) {
         res.send({ data: user });
@@ -54,7 +38,12 @@ module.exports.getUserById = (req, res, next) => {
         throw new NotFound('Данные по указанному id не найдена в БД.');
       }
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequest('Передан некорректный id'));
+      }
+      next(err);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -70,14 +59,6 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .catch((err) => {
-          console.log(err);
-          if (err.name === 'ConflictError' || err.code === 11000) {
-            throw new ConflictRequest('Пользователь с таким email уже зарегистрирован');
-          } else {
-            next(err);
-          }
-        })
         .then((user) => res.send({
           data: {
             name: user.name,
@@ -86,8 +67,15 @@ module.exports.createUser = (req, res, next) => {
             email: user.email,
           },
         }))
-        .catch((err) => next(err));
-    });
+        .catch((err) => {
+          if (err.name === 'ConflictError' || err.code === 11000) {
+            next(new ConflictRequest('Пользователь с таким email уже зарегистрирован'));
+          } else {
+            next(err);
+          }
+        });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -103,10 +91,11 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
+        next(new BadRequest(' Переданы некорректные данные при обновлении профиля.'));
+      } else {
+        next(err);
       }
-    })
-    .catch((err) => next(err));
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -123,8 +112,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest(' Переданы некорректные данные при обновлении профиля.');
+        next(new BadRequest(' Переданы некорректные данные при обновлении профиля.'));
+      } else {
+        next(err);
       }
-    })
-    .catch((err) => next(err));
+    });
 };
