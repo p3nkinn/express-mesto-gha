@@ -21,8 +21,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 const options = {
   origin: [
     'http://localhost:3000',
-    'http://p3nkinn.students.nomoredomains.sbs',
-    'http://api.backend.students.nomoredomains.sbs',
+    'https://p3nkinn.students.nomoredomains.sbs',
+    'https://api.backend.students.nomoredomains.sbs',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
