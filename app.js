@@ -1,5 +1,5 @@
-require('dotenv').config();
 const express = require('express');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -10,19 +10,11 @@ const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 const NotFound = require('./errors/NotFound');
 
-const { PORT = 3000 } = process.env;
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
 const options = {
   origin: [
     'http://localhost:3000',
-    'https://p3nkinn.students.nomoredomains.sbs',
-    'https://api.backend.students.nomoredomains.sbs',
+    'http://p3nkinn.students.nomoredomains.sbs',
+    'https://github.com/p3nkinn/react-mesto-api-full.git',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
@@ -31,8 +23,15 @@ const options = {
   credentials: true,
 };
 
+const app = express();
 app.use('*', cors(options));
+const { PORT = 3000 } = process.env;
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(requestLogger);
+
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
