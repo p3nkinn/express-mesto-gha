@@ -12,8 +12,8 @@ const NotFound = require('./errors/NotFound');
 
 const options = {
   origin: [
-    'http://localhost:3000',
-    'http://p3nkinn.students.nomoredomains.sbs',
+    'http://localhost:3010',
+    'https://p3nkinn.students.nomoredomains.sbs',
     'https://github.com/p3nkinn/react-mesto-api-full.git',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
