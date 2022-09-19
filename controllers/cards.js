@@ -6,7 +6,6 @@ const modelCards = require('../models/card');
 module.exports.getCard = (req, res, next) => {
   modelCards
     .find({})
-    .populate('owner')
     .then((card) => res.send({ data: card }))
     .catch((err) => next(err));
 };
@@ -36,7 +35,6 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   modelCards
     .create({ name, link, owner: req.user._id })
-    .then((card) => card.populate('owner'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -55,7 +53,7 @@ module.exports.likeCard = (req, res, next) => {
       { new: true },
     )
     .orFail(() => new NotFound('Пользователь с указанным id не существует'))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Передан некорректный id.'));
@@ -73,7 +71,7 @@ module.exports.dislikeCard = (req, res, next) => {
       { new: true },
     )
     .orFail(() => new NotFound('Пользователь с указанным id не существует'))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Передан некорректный id.'));
